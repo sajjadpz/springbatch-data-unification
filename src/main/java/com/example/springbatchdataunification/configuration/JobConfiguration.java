@@ -4,6 +4,7 @@ import com.example.springbatchdataunification.domain.Movie;
 import com.example.springbatchdataunification.domain.Rating;
 import com.example.springbatchdataunification.domain.User;
 import com.example.springbatchdataunification.domain.internal.*;
+import com.example.springbatchdataunification.processor.MovieItemProcessor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -43,14 +44,14 @@ public class JobConfiguration {
     public Job dataUnificationJob() {
         return jobBuilderFactory.get("dataUnificationJob")
                 .start(userLoad())
-//                .next(ratingLoad())
-//                .next(ratingLoad())
+                .next(ratingLoad())
+                .next(movieLoad())
                 .build();
     }
 
     @Bean
     public FlatFileItemReader<User> readUser() {
-        FlatFileItemReader<User> reader = new FlatFileItemReader<User>();
+        FlatFileItemReader<User> reader = new FlatFileItemReader<>();
         reader.setResource(new ClassPathResource("data/movieratingtweets/users.dat"));
         reader.setLineMapper(new DefaultLineMapper<User>() {{
             setLineTokenizer(new DelimitedLineTokenizer("::") {{
@@ -71,7 +72,7 @@ public class JobConfiguration {
 
     @Bean
     public FlatFileItemReader<Rating> readRating() {
-        FlatFileItemReader<Rating> reader = new FlatFileItemReader<Rating>();
+        FlatFileItemReader<Rating> reader = new FlatFileItemReader<>();
         reader.setResource(new ClassPathResource("data/movieratingtweets/ratings.dat"));
         reader.setLineMapper(new DefaultLineMapper<Rating>() {{
             setLineTokenizer(new DelimitedLineTokenizer("::") {{
@@ -96,7 +97,7 @@ public class JobConfiguration {
         reader.setResource(new ClassPathResource("data/movieratingtweets/movies.dat"));
         reader.setLineMapper(new DefaultLineMapper<Movie>() {{
             setLineTokenizer(new DelimitedLineTokenizer("::") {{
-                setNames("userId", "movieId", "rating", "ratingTimestamp");
+                setNames("movieId", "movieTitle", "genre");
             }});
             setFieldSetMapper(new MovieFieldSetMapper());
         }});
@@ -109,6 +110,11 @@ public class JobConfiguration {
         jdbcMovieDao.setDataSource(dataSource);
         return new MovieItemWriter()
                 .setMovieDao(jdbcMovieDao);
+    }
+
+    @Bean
+    public MovieItemProcessor processMovie() {
+        return new MovieItemProcessor();
     }
 
     @Bean
@@ -134,6 +140,7 @@ public class JobConfiguration {
         return stepBuilderFactory.get("movieLoad")
                 .<Movie, Movie>chunk(100)
                 .reader(readMovie())
+                .processor(processMovie())
                 .writer(writeMovie())
                 .build();
     }

@@ -11,12 +11,13 @@ DROP TABLE IF EXISTS USERS;
 # ------------------------------------------------------------
 
 CREATE TABLE `MOVIES` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `movie_id` bigint(11) NOT NULL,
-  `movie_title` varchar(100) DEFAULT NULL,
+  `movie_title` tinytext,
   `movie_year` int(4) DEFAULT NULL,
-  `genre` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`movie_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `genre` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8101 DEFAULT CHARSET=utf8;
 
 
 

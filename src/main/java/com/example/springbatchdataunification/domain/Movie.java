@@ -1,7 +1,5 @@
 package com.example.springbatchdataunification.domain;
 
-import java.util.Date;
-
 /**
  * @author sajjadpervaiz
  */
@@ -11,7 +9,7 @@ public class Movie {
 
     private String movieTitle;
 
-    private Date movieYear;
+    private String movieYear;
 
     private String genre;
 
@@ -31,11 +29,11 @@ public class Movie {
         this.movieTitle = movieTitle;
     }
 
-    public Date getMovieYear() {
+    public String getMovieYear() {
         return movieYear;
     }
 
-    public void setMovieYear(Date movieYear) {
+    public void setMovieYear(String movieYear) {
         this.movieYear = movieYear;
     }
 

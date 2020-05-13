@@ -10,8 +10,8 @@ import javax.sql.DataSource;
 
 public class JdbcMovieDao implements MovieDao {
 
-    private static final String INSERT_MOVIE = "INSERT INTO MOVIES (movie_id, movie_genre, movie_title, movie_year)" +
-            "VALUES (:movieId, :movieGenre, :movieTitle, :movieYear)";
+    private static final String INSERT_MOVIE = "INSERT INTO MOVIES (movie_id, genre, movie_title, movie_year)" +
+            "VALUES (:movieId, :genre, :movieTitle, :movieYear)";
 
     private NamedParameterJdbcOperations namedParameterJdbcOperations;
 
