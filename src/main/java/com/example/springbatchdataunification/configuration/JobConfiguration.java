@@ -17,6 +17,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import javax.sql.DataSource;
 
@@ -120,28 +121,31 @@ public class JobConfiguration {
     @Bean
     protected Step userLoad() {
         return stepBuilderFactory.get("userLoad")
-                .<User, User>chunk(100)
+                .<User, User>chunk(1000)
                 .reader(readUser())
                 .writer(writerUser())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
     @Bean
     protected Step ratingLoad() {
         return stepBuilderFactory.get("ratingLoad")
-                .<Rating, Rating>chunk(100)
+                .<Rating, Rating>chunk(1000)
                 .reader(readRating())
                 .writer(writeRating())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
     @Bean
     protected Step movieLoad() {
         return stepBuilderFactory.get("movieLoad")
-                .<Movie, Movie>chunk(100)
+                .<Movie, Movie>chunk(1000)
                 .reader(readMovie())
                 .processor(processMovie())
                 .writer(writeMovie())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
