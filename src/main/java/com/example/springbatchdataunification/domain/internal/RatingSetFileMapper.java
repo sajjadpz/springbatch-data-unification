@@ -14,7 +14,7 @@ public class RatingSetFileMapper implements FieldSetMapper<Rating> {
         rating.setUserId(fieldSet.readLong("userId"));
         rating.setMovieId(fieldSet.readLong("movieId"));
         rating.setRating(fieldSet.readInt("rating"));
-        rating.setRatingTimestamp(fieldSet.readDate("ratingTimestamp"));
+        rating.setRatingTimestamp(fieldSet.readString("ratingTimestamp"));
 
         return rating;
     }

@@ -1,7 +1,5 @@
 package com.example.springbatchdataunification.domain;
 
-import java.util.Date;
-
 /**
  * @author sajjadpervaiz
  */
@@ -13,7 +11,7 @@ public class Rating {
 
     private int rating;
 
-    private Date ratingTimestamp;
+    private String ratingTimestamp;
 
     public long getUserId() {
         return userId;
@@ -39,11 +37,11 @@ public class Rating {
         this.rating = rating;
     }
 
-    public Date getRatingTimestamp() {
+    public String getRatingTimestamp() {
         return ratingTimestamp;
     }
 
-    public void setRatingTimestamp(Date ratingTimestamp) {
+    public void setRatingTimestamp(String ratingTimestamp) {
         this.ratingTimestamp = ratingTimestamp;
     }
 

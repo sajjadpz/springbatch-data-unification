@@ -24,11 +24,12 @@ CREATE TABLE `MOVIES` (
 # ------------------------------------------------------------
 
 CREATE TABLE `RATINGS` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(11) unsigned NOT NULL,
-  `movie_id` bigint(11) DEFAULT NULL,
+  `movie_id` bigint(11) NOT NULL,
   `rating` int(11) DEFAULT NULL,
-  `rating_timestamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`user_id`)
+  `rating_timestamp` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
