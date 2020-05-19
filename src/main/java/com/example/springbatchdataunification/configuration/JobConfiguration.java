@@ -12,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
@@ -52,15 +53,13 @@ public class JobConfiguration {
 
     @Bean
     public FlatFileItemReader<User> readUser() {
-        FlatFileItemReader<User> reader = new FlatFileItemReader<>();
-        reader.setResource(new ClassPathResource("data/movieratingtweets/users.dat"));
-        reader.setLineMapper(new DefaultLineMapper<User>() {{
-            setLineTokenizer(new DelimitedLineTokenizer("::") {{
-                setNames("userId", "twitterId");
-            }});
-            setFieldSetMapper(new UserFieldSetMapper());
-        }});
-        return reader;
+        return new FlatFileItemReaderBuilder<User>()
+                .name("readUser")
+                .resource(new ClassPathResource("data/movieratingtweets/users.dat"))
+                .delimited().delimiter("::")
+                .names("userId, twitterId")
+                .fieldSetMapper(new UserFieldSetMapper())
+                .build();
     }
 
     @Bean
@@ -73,15 +72,13 @@ public class JobConfiguration {
 
     @Bean
     public FlatFileItemReader<Rating> readRating() {
-        FlatFileItemReader<Rating> reader = new FlatFileItemReader<>();
-        reader.setResource(new ClassPathResource("data/movieratingtweets/ratings.dat"));
-        reader.setLineMapper(new DefaultLineMapper<Rating>() {{
-            setLineTokenizer(new DelimitedLineTokenizer("::") {{
-                setNames("userId", "movieId", "rating", "ratingTimestamp");
-            }});
-            setFieldSetMapper(new RatingSetFileMapper());
-        }});
-        return reader;
+        return new FlatFileItemReaderBuilder<Rating>()
+                .name("readRating")
+                .resource(new ClassPathResource("data/movieratingtweets/ratings.dat"))
+                .delimited().delimiter("::")
+                .names("userId", "movieId", "rating", "ratingTimestamp")
+                .fieldSetMapper(new RatingSetFileMapper())
+                .build();
     }
 
     @Bean
@@ -94,15 +91,13 @@ public class JobConfiguration {
 
     @Bean
     public FlatFileItemReader<Movie> readMovie() {
-        FlatFileItemReader<Movie> reader = new FlatFileItemReader<Movie>();
-        reader.setResource(new ClassPathResource("data/movieratingtweets/movies.dat"));
-        reader.setLineMapper(new DefaultLineMapper<Movie>() {{
-            setLineTokenizer(new DelimitedLineTokenizer("::") {{
-                setNames("movieId", "movieTitle", "genre");
-            }});
-            setFieldSetMapper(new MovieFieldSetMapper());
-        }});
-        return reader;
+        return new FlatFileItemReaderBuilder<Movie>()
+                .name("readMovie")
+                .resource(new ClassPathResource("data/movieratingtweets/movie.dat"))
+                .delimited().delimiter("::")
+                .names("movieId", "movieTitle", "genre")
+                .fieldSetMapper(new MovieFieldSetMapper())
+                .build();
     }
 
     @Bean
