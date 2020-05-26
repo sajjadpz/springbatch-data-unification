@@ -3,15 +3,16 @@ package com.example.springbatchdataunification.configuration;
 import com.example.springbatchdataunification.domain.Movie;
 import com.example.springbatchdataunification.domain.Rating;
 import com.example.springbatchdataunification.domain.User;
-import com.example.springbatchdataunification.domain.internal.MovieFieldSetMapper;
-import com.example.springbatchdataunification.domain.internal.RatingSetFileMapper;
-import com.example.springbatchdataunification.domain.internal.UserFieldSetMapper;
+import com.example.springbatchdataunification.domain.internal.*;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class StepConfiguration {
@@ -24,6 +25,36 @@ public class StepConfiguration {
 
     @Value("${batch.input.ratings}")
     private Resource inRatings;
+
+    private final DataSource dataSource;
+
+    public StepConfiguration(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @Bean
+    public ItemWriter<User> writerUser() {
+        JdbcUserDao jdbcUserDao = new JdbcUserDao();
+        jdbcUserDao.setDataSource(dataSource);
+        return new UserItemWriter()
+                .setUserDao(jdbcUserDao);
+    }
+
+    @Bean
+    public ItemWriter<Rating> writeRating() {
+        JdbcRatingDao jdbcRatingDao = new JdbcRatingDao();
+        jdbcRatingDao.setDataSource(dataSource);
+        return new RatingItemWriter()
+                .setRatingDao(jdbcRatingDao);
+    }
+
+    @Bean
+    public ItemWriter<Movie> writeMovie() {
+        JdbcMovieDao jdbcMovieDao = new JdbcMovieDao();
+        jdbcMovieDao.setDataSource(dataSource);
+        return new MovieItemWriter()
+                .setMovieDao(jdbcMovieDao);
+    }
 
     @Bean
     public FlatFileItemReader<Movie> readMovie() {

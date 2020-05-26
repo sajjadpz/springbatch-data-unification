@@ -3,14 +3,12 @@ package com.example.springbatchdataunification.configuration;
 import com.example.springbatchdataunification.domain.Movie;
 import com.example.springbatchdataunification.domain.Rating;
 import com.example.springbatchdataunification.domain.User;
-import com.example.springbatchdataunification.domain.internal.*;
 import com.example.springbatchdataunification.processor.MovieItemProcessor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -29,14 +27,11 @@ public class JobConfiguration {
 
     private final StepBuilderFactory stepBuilderFactory;
 
-    private final DataSource dataSource;
-
     private StepConfiguration stepConfiguration;
 
     public JobConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, DataSource dataSource, StepConfiguration stepConfiguration) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
-        this.dataSource = dataSource;
         this.stepConfiguration = stepConfiguration;
     }
 
@@ -50,30 +45,6 @@ public class JobConfiguration {
     }
 
     @Bean
-    public ItemWriter<User> writerUser() {
-        JdbcUserDao jdbcUserDao = new JdbcUserDao();
-        jdbcUserDao.setDataSource(dataSource);
-        return new UserItemWriter()
-                .setUserDao(jdbcUserDao);
-    }
-
-    @Bean
-    public ItemWriter<Rating> writeRating() {
-        JdbcRatingDao jdbcRatingDao = new JdbcRatingDao();
-        jdbcRatingDao.setDataSource(dataSource);
-        return new RatingItemWriter()
-                .setRatingDao(jdbcRatingDao);
-    }
-
-    @Bean
-    public ItemWriter<Movie> writeMovie() {
-        JdbcMovieDao jdbcMovieDao = new JdbcMovieDao();
-        jdbcMovieDao.setDataSource(dataSource);
-        return new MovieItemWriter()
-                .setMovieDao(jdbcMovieDao);
-    }
-
-    @Bean
     public MovieItemProcessor processMovie() {
         return new MovieItemProcessor();
     }
@@ -83,7 +54,7 @@ public class JobConfiguration {
         return stepBuilderFactory.get("userLoad")
                 .<User, User>chunk(1000)
                 .reader(stepConfiguration.readUser())
-                .writer(writerUser())
+                .writer(stepConfiguration.writerUser())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
@@ -93,7 +64,7 @@ public class JobConfiguration {
         return stepBuilderFactory.get("ratingLoad")
                 .<Rating, Rating>chunk(1000)
                 .reader(stepConfiguration.readRating())
-                .writer(writeRating())
+                .writer(stepConfiguration.writeRating())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
@@ -104,7 +75,7 @@ public class JobConfiguration {
                 .<Movie, Movie>chunk(1000)
                 .reader(stepConfiguration.readMovie())
                 .processor(processMovie())
-                .writer(writeMovie())
+                .writer(stepConfiguration.writeMovie())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
