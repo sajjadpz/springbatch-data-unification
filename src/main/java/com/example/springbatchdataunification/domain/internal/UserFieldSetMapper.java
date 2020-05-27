@@ -9,8 +9,8 @@ public class UserFieldSetMapper implements FieldSetMapper<User> {
     @Override
     public User mapFieldSet(FieldSet fieldSet) throws BindException {
         User user = new User();
-        user.setUserId(fieldSet.readLong(0));
-        user.setTwitterId(fieldSet.readLong(1));
+        user.setUserId(fieldSet.readLong("userId"));
+        user.setTwitterId(fieldSet.readLong("twitterId"));
         return user;
     }
 }

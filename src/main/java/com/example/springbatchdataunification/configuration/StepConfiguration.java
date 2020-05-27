@@ -7,6 +7,8 @@ import com.example.springbatchdataunification.domain.internal.*;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,13 +71,15 @@ public class StepConfiguration {
 
     @Bean
     public FlatFileItemReader<User> readUser() {
-        return new FlatFileItemReaderBuilder<User>()
-                .name("readUser")
-                .resource(inUsers)
-                .delimited().delimiter("::")
-                .names("userId, twitterId")
-                .fieldSetMapper(new UserFieldSetMapper())
-                .build();
+        FlatFileItemReader<User> reader = new FlatFileItemReader<User>();
+        reader.setResource(inUsers);
+        reader.setLineMapper(new DefaultLineMapper<User>() {{
+            setLineTokenizer(new DelimitedLineTokenizer("::") {{
+                setNames("userId", "twitterId");
+            }});
+            setFieldSetMapper(new UserFieldSetMapper());
+        }});
+        return reader;
     }
 
     @Bean
