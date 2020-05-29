@@ -56,6 +56,7 @@ public class JobConfiguration {
                 .reader(stepConfiguration.readUser())
                 .writer(stepConfiguration.writerUser())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
+                .throttleLimit(20)
                 .build();
     }
 
@@ -66,6 +67,7 @@ public class JobConfiguration {
                 .reader(stepConfiguration.readRating())
                 .writer(stepConfiguration.writeRating())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
+                .throttleLimit(20)
                 .build();
     }
 
@@ -77,6 +79,7 @@ public class JobConfiguration {
                 .processor(processMovie())
                 .writer(stepConfiguration.writeMovie())
                 .taskExecutor(new SimpleAsyncTaskExecutor())
+                .throttleLimit(20)
                 .build();
     }
 
