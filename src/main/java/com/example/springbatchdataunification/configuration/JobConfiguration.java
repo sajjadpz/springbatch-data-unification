@@ -9,6 +9,9 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.FlowBuilder;
+import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -38,9 +41,31 @@ public class JobConfiguration {
     @Bean
     public Job dataUnificationJob() {
         return jobBuilderFactory.get("dataUnificationJob")
-                .start(userLoad())
-                .next(ratingLoad())
-                .next(movieLoad())
+                .start(splitFlow())
+                .build()
+                .build();
+    }
+
+    @Bean
+    public Flow splitFlow() {
+        return new FlowBuilder<SimpleFlow>("splitFlow")
+                .split(new SimpleAsyncTaskExecutor())
+                .add(flow1(), flow2())
+                .build();
+    }
+
+    @Bean
+    public Flow flow1() {
+        return new FlowBuilder<SimpleFlow>("flow1")
+                .start(movieLoad())
+                .next(userLoad())
+                .build();
+    }
+
+    @Bean
+    public Flow flow2() {
+        return new FlowBuilder<SimpleFlow>("flow2")
+                .start(ratingLoad())
                 .build();
     }
 
@@ -82,6 +107,4 @@ public class JobConfiguration {
                 .throttleLimit(20)
                 .build();
     }
-
-
 }
